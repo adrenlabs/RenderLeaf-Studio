@@ -2299,20 +2299,20 @@ textarea.form-input { min-height: 140px; resize: vertical; }
           </div>
         </div>
       </div>
-      <form class="contact-form reveal reveal-delay-1" onsubmit="event.preventDefault(); alert('Thanks for reaching out! We\'ll get back to you shortly.');">
+      <form class="contact-form reveal reveal-delay-1" id="contactForm">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Name</label>
-            <input type="text" class="form-input" placeholder="Your name" required>
+            <input type="text" class="form-input" name="name" placeholder="Your name" required>
           </div>
           <div class="form-group">
             <label class="form-label">Email</label>
-            <input type="email" class="form-input" placeholder="your@email.com" required>
+            <input type="email" class="form-input" name="email" placeholder="your@email.com" required>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Project Type</label>
-          <select class="form-input" required>
+          <select class="form-input" name="projectType" required>
             <option value="">Select a service</option>
             <option>Video Editing</option>
             <option>Motion Graphics</option>
@@ -2324,7 +2324,7 @@ textarea.form-input { min-height: 140px; resize: vertical; }
         </div>
         <div class="form-group">
           <label class="form-label">Message</label>
-          <textarea class="form-input" placeholder="Tell us about your project..." required></textarea>
+          <textarea class="form-input" name="message" placeholder="Tell us about your project..." required></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="align-self: flex-start;">
           Send Message
@@ -2395,9 +2395,7 @@ textarea.form-input { min-height: 140px; resize: vertical; }
     <button class="modal-close" id="modalClose">✕</button>
 
     <div class="modal-video" id="modalVideo" style="display:none">
-      <video id="modalVideoPlayer" controls playsinline preload="metadata">
-        <source src="public/tech.mp4" type="video/mp4">
-      </video>
+      <video id="modalVideoPlayer" src="" controls playsinline preload="metadata"></video>
     </div>
 
     <img class="modal-thumb" id="modalThumb" src="" alt="">
@@ -2407,7 +2405,7 @@ textarea.form-input { min-height: 140px; resize: vertical; }
       <h2 id="modalTitle">Project Title</h2>
       <p class="modal-category" id="modalCategory">Category</p>
       <p class="body-large" id="modalDesc">Description</p>
-      <a id="modalProjectLink" class="project-watch-btn" target="_blank" rel="noopener noreferrer">Watch Project ↗</a>
+      <a id="modalProjectLink" class="project-watch-btn" target="_blank" rel="noopener noreferrer">Watch Project \u2197</a>
     </div>
 
     <!-- <div class="case-grid">
@@ -2613,17 +2611,19 @@ cards.forEach(card => {
     if (p.linkType === 'video') {
       thumb.style.display = 'none';
       video.style.display = 'block';
+      player.src = 'public/tech.mp4';
       player.load();
       player.play().catch(function() {});
-      linkBtn.textContent = 'Watch on Google Drive \u2197';
-      linkBtn.href = p.link;
+      linkBtn.style.display = 'none';
     } else {
       thumb.style.display = 'block';
       video.style.display = 'none';
       player.pause();
       player.currentTime = 0;
+      player.removeAttribute('src');
       thumb.src = p.thumb;
-      linkBtn.textContent = p.cta || 'Watch Original Reel \u2197';
+      linkBtn.style.display = 'inline-flex';
+      linkBtn.textContent = p.cta || 'Watch on Instagram \u2197';
       linkBtn.href = p.link;
     }
     document.getElementById('modalTag').textContent = p.tag;
@@ -2838,6 +2838,33 @@ filterBtns.forEach(btn => {
         setTimeout(() => { card.style.display = 'none'; }, 300);
       }
     });
+  });
+});
+</script>
+
+<script>
+/* ============================================
+   CONTACT FORM — MAILTO
+   ============================================ */
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var data = new FormData(this);
+    var name = (data.get('name') || '').trim();
+    var email = (data.get('email') || '').trim();
+    var projectType = (data.get('projectType') || '').trim();
+    var message = (data.get('message') || '').trim();
+    if (!name || !email || !message) return;
+    var subject = encodeURIComponent('Portfolio Inquiry from ' + name);
+    var body = encodeURIComponent(
+      'Name: ' + name + '\n' +
+      'Email: ' + email + '\n' +
+      'Project Type: ' + projectType + '\n\n' +
+      'Message:\n' + message
+    );
+    window.location.href = 'mailto:pritam007dasp@gmail.com?subject=' + subject + '&body=' + body;
   });
 });
 </script>
